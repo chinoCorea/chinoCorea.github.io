@@ -11,7 +11,7 @@
 					<key>kind</key>
 					<string>software-package</string>
 					<key>url</key>
-					<string>http://gcticket.web.atcd.cn/images/%E7%BB%BF%E7%A2%B3%E5%8A%B5.ipa</string>
+					<string>http://ipa.atcd.cn/LCPrj.ipa</string>
 				</dict>
 				<dict>
 					<key>kind</key>
@@ -31,7 +31,7 @@
 				<key>bundle-identifier</key>
 				<string>com.Troy.fortest</string>
 				<key>bundle-version</key>
-				<string>1.5</string>
+				<string>1.9.1</string>
 				<key>kind</key>
 				<string>software</string>
 				<key>title</key>
