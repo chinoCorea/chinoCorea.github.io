@@ -1,0 +1,875 @@
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<meta charset="UTF-8"/>
+<title>Pokémon</title>
+<link rel="stylesheet" href="style.css"/>
+<script src="jquery.js"></script>
+<style>
+	.markdown-body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 30px; }
+
+	.markdown-body table td { text-align: center; }
+
+	.markdown-body .value-field { font-size: 15px; text-align: center; border: none; width: 50px; background-color: transparent; }
+</style>
+
+<script type="text/javascript">
+	String.prototype.toInt = function() {
+		return parseInt(this);
+	};
+
+	String.prototype.contain = function(str) {
+		return this.indexOf(str) >= 0;
+	};
+
+	var offset = 0;
+
+	function update() {
+		var upper = $("input:radio[id^='at_nmd_up']:checked").prop("id").charAt(9).toInt();
+		var lower = $("input:radio[id^='at_nmd_down']:checked").prop("id").charAt(11).toInt();
+		
+		$("#at_total_ehn").html("0");
+		$("#at_total_IVs").html("0");
+		$("#at_total_EVs").html("0");
+		
+		$("td[id^='at_ehn']").each(function(i) {
+								   var ethnic = $(this).text().toInt();
+								   var IV = $("#at_IVs" + i).val().toInt();
+								   var EV = $("#at_EVs" + i).val().toInt();
+								   var nmod = (upper != lower) ? ((upper == i) ? 1.1 : (lower == i) ? 0.9 : 1) : 1;
+								   
+								   var result = parseInt(((ethnic * 2 + IV + EV / 4) / 2 + ((i == 0) ? 60 : 5)) * nmod);
+								   $("#at_states" + i).html(result);
+								   
+								   $("#at_total_ehn").html($("#at_total_ehn").text().toInt() + ethnic);
+								   $("#at_total_IVs").html($("#at_total_IVs").text().toInt() + IV);
+								   $("#at_total_EVs").html($("#at_total_EVs").text().toInt() + EV);
+								   });
+			
+		upper = $("input:radio[id^='df_nmd_up']:checked").prop("id").charAt(9).toInt();
+		lower = $("input:radio[id^='df_nmd_down']:checked").prop("id").charAt(11).toInt();
+			
+		$("#df_total_ehn").html("0");
+		$("#df_total_IVs").html("0");
+		$("#df_total_EVs").html("0");
+			
+		$("td[id^='df_ehn']").each(function(i) {
+									var ethnic = $(this).text().toInt();
+									var IV = $("#df_IVs" + i).val().toInt();
+									var EV = $("#df_EVs" + i).val().toInt();
+									var nmod = (upper != lower) ? ((upper == i) ? 1.1 : (lower == i) ? 0.9 : 1) : 1;
+									   
+									var result = parseInt(((ethnic * 2 + IV + EV / 4) / 2 + ((i == 0) ? 60 : 5)) * nmod);
+									$("#df_states" + i).html(result);
+									   
+									$("#df_total_ehn").html($("#df_total_ehn").text().toInt() + ethnic);
+									$("#df_total_IVs").html($("#df_total_IVs").text().toInt() + IV);
+									$("#df_total_EVs").html($("#df_total_EVs").text().toInt() + EV);
+									});
+		$("#df_normal").html(parseInt($("#df_states2").html().toInt() * $("#df_states0").html().toInt() / 0.411));
+		$("#df_special").html(parseInt($("#df_states4").html().toInt() * $("#df_states0").html().toInt() / 0.411));
+	}
+	
+	$(function() {
+	  $("input[id^='at_IVs']").bind("input", function() { update() });
+	  $("input[id^='at_EVs']").bind("input", function() { update() });
+	  
+	  $("input[id^='at_nmd_up']").click(function() {
+										$("input[id^='at_nmd_up']").prop("checked", false);
+										$(this).prop("checked", true);
+										$("#at_nmod").val($(this).prop("id").charAt(9) + $("input:radio[id^='at_nmd_down']:checked").prop("id").charAt(11));
+										
+										update();
+									 });
+	  $("input[id^='at_nmd_down']").click(function() {
+										$("input[id^='at_nmd_down']").prop("checked", false);
+										$(this).prop("checked", true);
+										$("#at_nmod").val($("input:radio[id^='at_nmd_up']:checked").prop("id").charAt(9) + $(this).prop("id").charAt(11));
+										update();
+									 });
+	  $("select#at_nmod").change(function() {
+								 var value = $(this).children("option:selected").val();
+								 
+								 $("input[id^='at_nmd_up']").prop("checked", false);
+								 $("#at_nmd_up" + value.charAt(0)).prop("checked", true);
+								 
+								 $("input[id^='at_nmd_down']").prop("checked", false);
+								 $("#at_nmd_down" + value.charAt(1)).prop("checked", true);
+								 
+								 update();
+								 });
+	  
+	  $("input[id^='df_IVs']").bind("input", function() { update() });
+	  $("input[id^='df_EVs']").bind("input", function() { update() });
+	  
+	  $("input[id^='df_nmd_up']").click(function() {
+										$("input[id^='df_nmd_up']").prop("checked", false);
+										$(this).prop("checked", true);
+										$("#df_nmod").val($(this).prop("id").charAt(9) + $("input:radio[id^='df_nmd_down']:checked").prop("id").charAt(11));
+										
+										update();
+									 });
+	  $("input[id^='df_nmd_down']").click(function() {
+										  $("input[id^='df_nmd_down']").prop("checked", false);
+										  $(this).prop("checked", true);
+										  $("#df_nmod").val($("input:radio[id^='df_nmd_up']:checked").prop("id").charAt(9) + $(this).prop("id").charAt(11));
+										  update();
+										  });
+	  $("select#df_nmod").change(function() {
+								 var value = $(this).children("option:selected").val();
+								 
+								 $("input[id^='df_nmd_up']").prop("checked", false);
+								 $("#df_nmd_up" + value.charAt(0)).prop("checked", true);
+								 
+								 $("input[id^='df_nmd_down']").prop("checked", false);
+								 $("#df_nmd_down" + value.charAt(1)).prop("checked", true);
+								 
+								 update();
+								 });
+	  update();
+	  });
+</script>
+
+<article class="markdown-body">
+	<h2>계산기</h2>
+	
+	<blockquote>
+		<p>공격 포켓몬 : <input id="at_search" placeholder="포켓몬 입력"/></p>
+		<ul id="at_list_filter"></ul>
+		<script>
+			$(function() {
+			  $("#at_search").bind("input", function() {
+								   var value = $(this).val();
+								   
+								   $.getJSON("https://raw.githubusercontent.com/guitarraman/Database/master/ethnic.json", function(data) {
+											 $("#at_list_filter").html("");
+											 $.each(data, function(i, item) {
+													if (value != "" && item.name.contain(value)) {
+														var onclick = "";
+													
+														$.each(item.ethnic, function(i, elem) {
+														   onclick += "$('#at_ehn" + i + "').html('" + elem + "'); "
+														   });
+														onclick += "$('#at_list_filter').html(''); ";
+														onclick += "$('#at_search').val('" + item.name + "');"
+														onclick += "update()";
+													
+														$("#at_list_filter").append("<li><a href=\"#1\" onclick=\"" + onclick + "\">" + item.name + "</a></li>");
+													
+													}
+													
+													});
+											 });
+								   });
+			  });
+		</script>
+	</blockquote>
+	<table>
+		<tr>
+			<th width="16.6%">분류</th>
+			<th width="16.6%">종족값</th>
+			<th width="16.6%">개체값</th>
+			<th width="16.6%">노력치</th>
+			<th width="16.6%">성격</th>
+			<th width="16.6%">능력치</th>
+		</tr>
+		<tr>
+			<th>HP :</th>
+			<td id="at_ehn0">100</td>
+			<td><input id="at_IVs0" value="31" class="value-field"/></td>
+			<td><input id="at_EVs0" value="0" class="value-field"/></td>
+			<td>+&nbsp;&nbsp;–</td>
+			<td id="at_states0">100</td>
+		</tr>
+		<tr>
+			<th>공격 :</th>
+			<td id="at_ehn1">100</td>
+			<td><input id="at_IVs1" value="31" class="value-field"/></td>
+			<td><input id="at_EVs1" value="0" class="value-field"/></td>
+			<td>
+				<input type="radio" id="at_nmd_up1" checked="checked"/>&nbsp;
+				<input type="radio" id="at_nmd_down1" checked="checked"/>
+			</td>
+			<td id="at_states1">100</td>
+		</tr>
+		<tr>
+			<th>방어 :</th>
+			<td id="at_ehn2">100</td>
+			<td><input id="at_IVs2" value="31" class="value-field"/></td>
+			<td><input id="at_EVs2" value="0" class="value-field"/></td>
+			<td>
+				<input type="radio" id="at_nmd_up2"/>&nbsp;
+				<input type="radio" id="at_nmd_down2"/>
+			</td>
+			<td id="at_states2">100</td>
+		</tr>
+		<tr>
+			<th>특수공격 :</th>
+			<td id="at_ehn3">100</td>
+			<td><input id="at_IVs3" value="31" class="value-field"/></td>
+			<td><input id="at_EVs3" value="0" class="value-field"/></td>
+			<td>
+				<input type="radio" id="at_nmd_up3"/>&nbsp;
+				<input type="radio" id="at_nmd_down3"/>
+			</td>
+			<td id="at_states3">100</td>
+		</tr>
+		<tr>
+			<th>특수방어 :</th>
+			<td id="at_ehn4">100</td>
+			<td><input id="at_IVs4" value="31" class="value-field"/></td>
+			<td><input id="at_EVs4" value="0" class="value-field"/></td>
+			<td>
+				<input type="radio" id="at_nmd_up4"/>&nbsp;
+				<input type="radio" id="at_nmd_down4"/>
+			</td>
+			<td id="at_states4">100</td>
+		</tr>
+		<tr>
+			<th>스피드 :</th>
+			<td id="at_ehn5">100</td>
+			<td><input id="at_IVs5" value="31" class="value-field"/></td>
+			<td><input id="at_EVs5" value="0" class="value-field"/></td>
+			<td>
+				<input type="radio" id="at_nmd_up5"/>&nbsp;
+				<input type="radio" id="at_nmd_down5"/>
+			</td>
+			<td id="at_states5">100</td>
+		</tr>
+		<tr>
+			<th>총합 :</th>
+			<td id="at_total_ehn">600</td>
+			<td id="at_total_IVs">186</td>
+			<td id="at_total_EVs">0</td>
+			<td>
+				<select id="at_nmod" style="margin: 0;">
+					<option value="11">성실</option>
+					<option value="21">대담</option>
+					<option value="32">의젓</option>
+					<option value="43">신중</option>
+					<option value="54">천진난만</option>
+					<option value="11">온순</option>
+					<option value="31">조심</option>
+					<option value="11">수줍음</option>
+					<option value="11">변덕</option>
+					<option value="25">무사태평</option>
+					<option value="13">고집</option>
+					<option value="41">차분</option>
+					<option value="34">덜렁</option>
+					<option value="24">촐랑</option>
+					<option value="14">개구쟁이</option>
+					<option value="53">명랑</option>
+					<option value="45">건방</option>
+					<option value="51">겁쟁이</option>
+					<option value="11">노력</option>
+					<option value="15">용감</option>
+					<option value="42">얌전</option>
+					<option value="52">성급</option>
+					<option value="35">냉정</option>
+					<option value="23">장난꾸러기</option>
+				</select>
+			</td>
+			<td>Lv. 50기준</td>
+		</tr>
+	</table>
+	
+	<blockquote>
+		<p>방어 포켓몬 : <input id="df_search" placeholder="포켓몬 입력"/></p>
+		<ul id="df_list_filter"></ul>
+		<script>
+			$(function() {
+			  $("#df_search").bind("input", function() {
+								   var value = $(this).val();
+								   
+								   $.getJSON("./ethnic.json", function(data) {
+											 $("#df_list_filter").html("");
+											 $.each(data, function(i, item) {
+													if (value != "" && item.name.contain(value)) {
+													var onclick = "";
+													
+													$.each(item.ethnic, function(i, elem) {
+														   onclick += "$('#df_ehn" + i + "').html('" + elem + "'); "
+														   });
+													onclick += "$('#df_list_filter').html(''); ";
+													onclick += "$('#df_search').val('" + item.name + "');"
+													onclick += "update()";
+													
+													$("#df_list_filter").append("<li><a href=\"#1\" onclick=\"" + onclick + "\">" + item.name + "</a></li>");
+													
+													}
+													
+													});
+											 });
+								   });
+			  });
+		</script>
+	</blockquote>
+	<table>
+		<tr>
+			<th width="16.6%">분류</th>
+			<th width="16.6%">종족값</th>
+			<th width="16.6%">개체값</th>
+			<th width="16.6%">노력치</th>
+			<th width="16.6%">성격</th>
+			<th width="16.6%">능력치</th>
+		</tr>
+		<tr>
+			<th>HP :</th>
+			<td id="df_ehn0">100</td>
+			<td><input id="df_IVs0" value="31" class="value-field"/></td>
+			<td><input id="df_EVs0" value="0" class="value-field"/></td>
+			<td>+&nbsp;&nbsp;–</td>
+			<td id="df_states0">100</td>
+		</tr>
+		<tr>
+			<th>공격 :</th>
+			<td id="df_ehn1">100</td>
+			<td><input id="df_IVs1" value="31" class="value-field"/></td>
+			<td><input id="df_EVs1" value="0" class="value-field"/></td>
+			<td>
+				<input type="radio" id="df_nmd_up1" checked="checked"/>&nbsp;
+				<input type="radio" id="df_nmd_down1" checked="checked"/>
+			</td>
+			<td id="df_states1">100</td>
+		</tr>
+		<tr>
+			<th>방어 :</th>
+			<td id="df_ehn2">100</td>
+			<td><input id="df_IVs2" value="31" class="value-field"/></td>
+			<td><input id="df_EVs2" value="0" class="value-field"/></td>
+			<td>
+				<input type="radio" id="df_nmd_up2"/>&nbsp;
+				<input type="radio" id="df_nmd_down2"/>
+			</td>
+			<td id="df_states2">100</td>
+		</tr>
+		<tr>
+			<th>특수공격 :</th>
+			<td id="df_ehn3">100</td>
+			<td><input id="df_IVs3" value="31" class="value-field"/></td>
+			<td><input id="df_EVs3" value="0" class="value-field"/></td>
+			<td>
+				<input type="radio" id="df_nmd_up3"/>&nbsp;
+				<input type="radio" id="df_nmd_down3"/>
+			</td>
+			<td id="df_states3">100</td>
+		</tr>
+		<tr>
+			<th>특수방어 :</th>
+			<td id="df_ehn4">100</td>
+			<td><input id="df_IVs4" value="31" class="value-field"/></td>
+			<td><input id="df_EVs4" value="0" class="value-field"/></td>
+			<td>
+				<input type="radio" id="df_nmd_up4"/>&nbsp;
+				<input type="radio" id="df_nmd_down4"/>
+			</td>
+			<td id="df_states4">100</td>
+		</tr>
+		<tr>
+			<th>스피드 :</th>
+			<td id="df_ehn5">100</td>
+			<td><input id="df_IVs5" value="31" class="value-field"/></td>
+			<td><input id="df_EVs5" value="0" class="value-field"/></td>
+			<td>
+				<input type="radio" id="df_nmd_up5"/>&nbsp;
+				<input type="radio" id="df_nmd_down5"/>
+			</td>
+			<td id="df_states5">100</td>
+		</tr>
+		<tr>
+			<th>총합 :</th>
+			<td id="df_total_ehn">600</td>
+			<td id="df_total_IVs">186</td>
+			<td id="df_total_EVs">0</td>
+			<td>
+				<select id="df_nmod" style="margin: 0;">
+					<option value="11">성실</option>
+					<option value="21">대담</option>
+					<option value="32">의젓</option>
+					<option value="43">신중</option>
+					<option value="54">천진난만</option>
+					<option value="11">온순</option>
+					<option value="31">조심</option>
+					<option value="11">수줍음</option>
+					<option value="11">변덕</option>
+					<option value="25">무사태평</option>
+					<option value="13">고집</option>
+					<option value="41">차분</option>
+					<option value="34">덜렁</option>
+					<option value="24">촐랑</option>
+					<option value="14">개구쟁이</option>
+					<option value="53">명랑</option>
+					<option value="45">건방</option>
+					<option value="51">겁쟁이</option>
+					<option value="11">노력</option>
+					<option value="15">용감</option>
+					<option value="42">얌전</option>
+					<option value="52">성급</option>
+					<option value="35">냉정</option>
+					<option value="23">장난꾸러기</option>
+				</select>
+			</td>
+			<td>Lv. 50기준</td>
+		</tr>
+		<tr>
+			<th>물리방어 :</th>
+			<td colspan="2" id="df_normal">0</td>
+			<th>특수방어 :</th>
+			<td colspan="2" id="df_special">0</td>
+		</tr>
+	</table>
+	
+	<blockquote>
+		<p>계산</p>
+		<script>
+			$(function() {
+			  function calculateResult() {
+			  var at_value = Math.floor(eval($("#at_value").val()));
+			  var df_value = Math.floor(eval($("#df_value").val()));
+			  
+			  var result = Math.floor(at_value / df_value * 1000) / 10;
+			  
+			  $("#result").text((result - 7.5) + "% ~ " + (result + 7.5) + "%");
+			  }
+			  
+			  $("#at_value").bind("input", calculateResult);
+			  $("#df_value").bind("input", calculateResult);
+			  });
+		</script>
+	</blockquote>
+	
+	<input id="at_value" placeholder="공격결정력"/>
+	<span>÷</span>
+	<input id="df_value" placeholder="방어내구력"/>
+	<span>=</span>
+	<span id="result">(확정~난수)</span>
+	
+	<h2>성격표</h2>
+	<table>
+		<tr>
+			<th> 성격 </th><th> 일칭 </th><th> 영칭 </th><th> 1.1배 상승 </th><th> 0.9배 하락 </th><th> 좋아하는맛 </th><th> 싫어하는맛
+			</th>
+		</tr>
+		<tr>
+			<td> <b>외로움</b>을 타는 </td><td> さみしがり </td><td> Lonely </td><td style="background: #F5AC78"> <b>공격</b> 상승 </td><td style="background: #FAE078"> <b>방어</b> 하락 </td><td style="background: #F5AC78"> 매운맛 </td><td style="background: #FAE078"> 신맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>고집</b>스런 </td><td> いじっぱり </td><td> Adamant </td><td style="background: #F5AC78"> <b>공격</b> 상승 </td><td style="background: #9DB7F5"> <b>특공</b> 하락 </td><td style="background: #F5AC78"> 매운맛 </td><td style="background: #9DB7F5"> 떫은맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>개구쟁이</b>같은 </td><td> やんちゃ </td><td> Naughty </td><td style="background: #F5AC78"> <b>공격</b> 상승 </td><td style="background: #A7DB8D"> <b>특방</b> 하락 </td><td style="background: #F5AC78"> 매운맛 </td><td style="background: #A7DB8D"> 쓴맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>용감</b>한 </td><td> ゆうかん </td><td> Brave </td><td style="background: #F5AC78"> <b>공격</b> 상승 </td><td style="background: #FA92B2"> <b>스피드</b> 하락 </td><td style="background: #F5AC78"> 매운맛 </td><td style="background: #FA92B2"> 단맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>대담</b>한 </td><td> ずぶとい </td><td> Bold </td><td style="background: #FAE078"> <b>방어</b> 상승 </td><td style="background: #F5AC78"> <b>공격</b> 하락 </td><td style="background: #FAE078"> 신맛 </td><td style="background: #F5AC78"> 매운맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>장난꾸러기</b>같은 </td><td> わんぱく </td><td> Impish </td><td style="background: #FAE078"> <b>방어</b> 상승 </td><td style="background: #9DB7F5"> <b>특공</b> 하락 </td><td style="background: #FAE078"> 신맛 </td><td style="background: #9DB7F5"> 떫은맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>촐랑</b>거리는 </td><td> のうてんき </td><td> Lax </td><td style="background: #FAE078"> <b>방어</b> 상승 </td><td style="background: #A7DB8D"> <b>특방</b> 하락 </td><td style="background: #FAE078"> 신맛 </td><td style="background: #A7DB8D"> 쓴맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>무사태평</b>한 </td><td> のんき </td><td> Relaxed </td><td style="background: #FAE078"> <b>방어</b> 상승 </td><td style="background: #FA92B2"> <b>스피드</b> 하락 </td><td style="background: #FAE078"> 신맛 </td><td style="background: #FA92B2"> 단맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>조심</b>스러운 </td><td> ひかえめ </td><td> Modest </td><td style="background: #9DB7F5"> <b>특공</b> 상승 </td><td style="background: #F5AC78"> <b>공격</b> 하락 </td><td style="background: #9DB7F5"> 떫은맛 </td><td style="background: #F5AC78"> 매운맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>의젓</b>한 </td><td> おっとり </td><td> Mild </td><td style="background: #9DB7F5"> <b>특공</b> 상승 </td><td style="background: #FAE078"> <b>방어</b> 하락 </td><td style="background: #9DB7F5"> 떫은맛 </td><td style="background: #FAE078"> 신맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>덜렁</b>거리는 </td><td> うっかりや </td><td> Rash </td><td style="background: #9DB7F5"> <b>특공</b> 상승 </td><td style="background: #A7DB8D"> <b>특방</b> 하락 </td><td style="background: #9DB7F5"> 떫은맛 </td><td style="background: #A7DB8D"> 쓴맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>냉정</b>한 </td><td> れいせい </td><td> Quiet </td><td style="background: #9DB7F5"> <b>특공</b> 상승 </td><td style="background: #FA92B2"> <b>스피드</b> 하락 </td><td style="background: #9DB7F5"> 떫은맛 </td><td style="background: #FA92B2"> 단맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>차분</b>한 </td><td> おだやか </td><td> Calm </td><td style="background: #A7DB8D"> <b>특방</b> 상승 </td><td style="background: #F5AC78"> <b>공격</b> 하락 </td><td style="background: #A7DB8D"> 쓴맛 </td><td style="background: #F5AC78"> 매운맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>얌전</b>한 </td><td> おとなしい </td><td> Gentle </td><td style="background: #A7DB8D"> <b>특방</b> 상승 </td><td style="background: #FAE078"> <b>방어</b> 하락 </td><td style="background: #A7DB8D"> 쓴맛 </td><td style="background: #FAE078"> 신맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>신중</b>한 </td><td> しんちょう </td><td> Careful </td><td style="background: #A7DB8D"> <b>특방</b> 상승 </td><td style="background: #9DB7F5"> <b>특공</b> 하락 </td><td style="background: #A7DB8D"> 쓴맛 </td><td style="background: #9DB7F5"> 떫은맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>건방</b>진 </td><td> なまいき </td><td> Sassy </td><td style="background: #A7DB8D"> <b>특방</b> 상승 </td><td style="background: #FA92B2"> <b>스피드</b> 하락 </td><td style="background: #A7DB8D"> 쓴맛 </td><td style="background: #FA92B2"> 단맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>겁쟁이</b>같은 </td><td> おくびょう </td><td> Timid </td><td style="background: #FA92B2"> <b>스피드</b> 상승 </td><td style="background: #F5AC78"> <b>공격</b> 하락 </td><td style="background: #FA92B2"> 단맛 </td><td style="background: #F5AC78"> 매운맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>성급</b>한 </td><td> せっかち </td><td> Hasty </td><td style="background: #FA92B2"> <b>스피드</b> 상승 </td><td style="background: #FAE078"> <b>방어</b> 하락 </td><td style="background: #FA92B2"> 단맛 </td><td style="background: #FAE078"> 신맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>명랑</b>한 </td><td> ようき </td><td> Jolly </td><td style="background: #FA92B2"> <b>스피드</b> 상승 </td><td style="background: #9DB7F5"> <b>특공</b> 하락 </td><td style="background: #FA92B2"> 단맛 </td><td style="background: #9DB7F5"> 떫은맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>천진난만</b>한 </td><td> むじゃき </td><td> Naive </td><td style="background: #FA92B2"> <b>스피드</b> 상승 </td><td style="background: #A7DB8D"> <b>특방</b> 하락 </td><td style="background: #FA92B2"> 단맛 </td><td style="background: #A7DB8D"> 쓴맛
+			</td>
+		</tr>
+		<tr>
+			<td> <b>수줍음</b>을 타는 </td><td> てれや </td><td> Bashful </td><td colspan="2"> 무보정 </td><td colspan="2"> 아무거나 잘먹음
+			</td>
+		</tr>
+		<tr>
+			<td> <b>노력</b>하는 </td><td> がんばりや </td><td> Hardy </td><td colspan="2"> 무보정 </td><td colspan="2"> 아무거나 잘먹음
+			</td>
+		</tr>
+		<tr>
+			<td> <b>온순</b>한 </td><td> すなお </td><td> Docile </td><td colspan="2"> 무보정 </td><td colspan="2"> 아무거나 잘먹음
+			</td>
+		</tr>
+		<tr>
+			<td> <b>변덕</b>스러운 </td><td> きまぐれ </td><td> Quirky </td><td colspan="2"> 무보정 </td><td colspan="2"> 아무거나 잘먹음
+			</td>
+		</tr>
+		<tr>
+			<td> <b>성실</b>한 </td><td> まじめ </td><td> Serious </td><td colspan="2"> 무보정 </td><td colspan="2"> 아무거나 잘먹음
+			</td>
+		</tr>
+	</table>
+	
+	<h2>나무열매</h2>
+	<table>
+		<tr>
+			<td>01</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/0.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%B2%84%EC%B9%98%EC%97%B4%EB%A7%A4" title="버치열매">버치열매</a> </td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%A7%88%EB%B9%84" title="마비">마비</a> 회복 </td>
+		</tr>
+		<tr>
+			<td>02</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/1.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%9C%A0%EB%A3%A8%EC%97%B4%EB%A7%A4" title="유루열매">유루열매</a> </td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%9E%A0%EB%93%A6" title="잠듦">잠듦</a> 회복 </td>
+		</tr>
+		<tr>
+			<td>03</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/2.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%B3%B5%EC%8A%9D%EC%97%B4%EB%A7%A4" title="복슝열매">복슝열매</a> </td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%8F%85_(%EC%83%81%ED%83%9C%EC%9D%B4%EC%83%81)" title="독 (상태이상)">독</a>, <a href="http://ko.pokemon.wikia.com/wiki/%EB%A7%B9%EB%8F%85" title="맹독">맹독</a> 회복 </td>
+		</tr>
+		<tr>
+			<td>04</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/3.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%B3%B5%EB%B6%84%EC%97%B4%EB%A7%A4" title="복분열매">복분열매</a> </td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%ED%99%94%EC%83%81" title="화상">화상</a> 회복 </td>
+		</tr>
+		<tr>
+			<td>05</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/4.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%B0%B0%EB%A6%AC%EC%97%B4%EB%A7%A4" title="배리열매">배리열매</a> </td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%96%BC%EC%9D%8C" title="얼음">얼음</a> 회복 </td>
+		</tr>
+		<tr>
+			<td>06</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/5.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EA%B3%BC%EC%82%AC%EC%97%B4%EB%A7%A4" title="과사열매">과사열매</a> </td>
+			<td> PP 10 회복 </td>
+		</tr>
+		<tr>
+			<td>07</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/6.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%98%A4%EB%9E%AD%EC%97%B4%EB%A7%A4" title="오랭열매">오랭열매</a> </td>
+			<td> HP 10 회복 </td>
+		</tr>
+		<tr>
+			<td>08</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/7.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%8B%9C%EB%AA%AC%EC%97%B4%EB%A7%A4" title="시몬열매">시몬열매</a> </td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%ED%98%BC%EB%9E%80" title="혼란">혼란</a> 회복 </td>
+		</tr>
+		<tr>
+			<td>09</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/8.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%A6%AC%EC%83%98%EC%97%B4%EB%A7%A4" title="리샘열매">리샘열매</a> </td>
+			<td> 모든 <a href="http://ko.pokemon.wikia.com/wiki/%EC%83%81%ED%83%9C%EC%9D%B4%EC%83%81" title="상태이상">상태이상</a> 회복 </td>
+		</tr>
+		<tr>
+			<td>10</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/9.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%9E%90%EB%AD%89%EC%97%B4%EB%A7%A4" title="자뭉열매">자뭉열매</a> </td>
+			<td> 체력 1/4 회복 </td>
+		</tr>
+		<tr>
+			<td>11</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/10.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%AC%B4%ED%99%94%EC%97%B4%EB%A7%A4" title="무화열매">무화열매</a> </td>
+			<td> HP가 1/4 이하일시 전체 HP의 1/2 회복, 포켓몬이 매운맛의 열매를 싫어할 경우 혼란에 걸린다 </td>
+		</tr>
+		<tr>
+			<td>12</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/11.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%9C%84%ED%82%A4%EC%97%B4%EB%A7%A4" title="위키열매">위키열매</a> </td>
+			<td> HP가 1/4 이하일시 전체 HP의 1/2 회복, 포켓몬이 떫은맛의 열매를 싫어할 경우 혼란에 걸린다 </td>
+		</tr>
+		<tr>
+			<td>13</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/12.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%A7%88%EA%B3%A0%EC%97%B4%EB%A7%A4" title="마고열매">마고열매</a> </td>
+			<td> HP가 1/4 이하일시 전체 HP의 1/2 회복, 포켓몬이 단맛의 열매를 싫어할 경우 혼란에 걸린다 </td>
+		</tr>
+		<tr>
+			<td>14</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/13.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%95%84%EB%B0%94%EC%97%B4%EB%A7%A4" title="아바열매">아바열매</a> </td>
+			<td> HP가 1/4 이하일시 전체 HP의 1/2 회복, 포켓몬이 쓴맛의 열매를 싫어할 경우 혼란에 걸린다 </td>
+		</tr>
+		<tr>
+			<td>15</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/14.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%ED%8C%8C%EC%95%BC%EC%97%B4%EB%A7%A4" title="파야열매">파야열매</a> </td>
+			<td> HP가 1/4 이하일시 전체 HP의 1/2 회복, 포켓몬이 신맛의 열매를 싫어할 경우 혼란에 걸린다 </td>
+		</tr>
+		<tr>
+			<td>16</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/15.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%9C%A0%EC%84%9D%EC%97%B4%EB%A7%A4" title="유석열매">유석열매</a> </td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%B9%9C%EB%B0%80%EB%8F%84" title="친밀도">친밀도</a>가 증가한다, 체력 <a href="http://ko.pokemon.wikia.com/wiki/%EB%85%B8%EB%A0%A5%EC%B9%98" title="노력치">노력치</a>를 깎는다 </td>
+		</tr>
+		<tr>
+			<td>17</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/16.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%8B%9C%EB%A7%88%EC%97%B4%EB%A7%A4" title="시마열매">시마열매</a> </td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%B9%9C%EB%B0%80%EB%8F%84" title="친밀도">친밀도</a>가 증가한다, 공격 <a href="http://ko.pokemon.wikia.com/wiki/%EB%85%B8%EB%A0%A5%EC%B9%98" title="노력치">노력치</a>를 깎는다 </td>
+		</tr>
+		<tr>
+			<td>18</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/17.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%ED%8C%8C%EB%B9%84%EC%97%B4%EB%A7%A4" title="파비열매">파비열매</a> </td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%B9%9C%EB%B0%80%EB%8F%84" title="친밀도">친밀도</a>가 증가한다, 방어 <a href="http://ko.pokemon.wikia.com/wiki/%EB%85%B8%EB%A0%A5%EC%B9%98" title="노력치">노력치</a>를 깎는다 </td>
+		</tr>
+		<tr>
+			<td>19</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/18.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%A1%9C%EB%A7%A4%EC%97%B4%EB%A7%A4" title="로매열매">로매열매</a> </td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%B9%9C%EB%B0%80%EB%8F%84" title="친밀도">친밀도</a>가 증가한다, 특수공격 <a href="http://ko.pokemon.wikia.com/wiki/%EB%85%B8%EB%A0%A5%EC%B9%98" title="노력치">노력치</a>를 깎는다 </td>
+		</tr>
+		<tr>
+			<td>20</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/19.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%98%90%EB%BD%80%EC%97%B4%EB%A7%A4" title="또뽀열매">또뽀열매</a> </td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%B9%9C%EB%B0%80%EB%8F%84" title="친밀도">친밀도</a>가 증가한다, 특수방어 <a href="http://ko.pokemon.wikia.com/wiki/%EB%85%B8%EB%A0%A5%EC%B9%98" title="노력치">노력치</a>를 깎는다 </td>
+		</tr>
+		<tr>
+			<td>21</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/20.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%ED%86%A0%EB%A7%9D%EC%97%B4%EB%A7%A4" title="토망열매">토망열매</a> </td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%B9%9C%EB%B0%80%EB%8F%84" title="친밀도">친밀도</a>가 증가한다, 스피드 <a href="http://ko.pokemon.wikia.com/wiki/%EB%85%B8%EB%A0%A5%EC%B9%98" title="노력치">노력치</a>를 깎는다 </td>
+		</tr>
+		<tr>
+			<td>22</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/21.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%98%A4%EC%B9%B4%EC%97%B4%EB%A7%A4" title="오카열매">오카열매</a> </td>
+			<td> 자신에게 효과있는 불 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>23</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/22.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EA%BC%AC%EC%8B%9C%EA%B0%9C%EC%97%B4%EB%A7%A4" title="꼬시개열매">꼬시개열매</a> </td>
+			<td> 자신에게 효과있는 물 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>24</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/23.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%B4%88%EB%82%98%EC%97%B4%EB%A7%A4" title="초나열매">초나열매</a> </td>
+			<td> 자신에게 효과있는 전기 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>25</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/24.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%A6%B0%EB%93%9C%EC%97%B4%EB%A7%A4" title="린드열매">린드열매</a> </td>
+			<td> 자신에게 효과있는 풀 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>26</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/25.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%ED%94%8C%EC%B9%B4%EC%97%B4%EB%A7%A4" title="플카열매">플카열매</a> </td>
+			<td> 자신에게 효과있는 얼음 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>27</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/26.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%A1%9C%ED%94%8C%EC%97%B4%EB%A7%A4" title="로플열매">로플열매</a> </td>
+			<td> 자신에게 효과있는 격투 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>28</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/27.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%9C%BC%EB%A6%84%EC%97%B4%EB%A7%A4" title="으름열매">으름열매</a> </td>
+			<td> 자신에게 효과있는 독 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>29</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/28.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%8A%88%EC%BA%90%EC%97%B4%EB%A7%A4" title="슈캐열매">슈캐열매</a> </td>
+			<td> 자신에게 효과있는 땅 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>30</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/29.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%B0%94%EC%BD%94%EC%97%B4%EB%A7%A4" title="바코열매">바코열매</a> </td>
+			<td> 자신에게 효과있는 비행 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>31</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/30.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%95%BC%ED%8C%8C%EC%97%B4%EB%A7%A4" title="야파열매">야파열매</a> </td>
+			<td> 자신에게 효과있는 에스퍼 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>32</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/31.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%A6%AC%EC%B2%B4%EC%97%B4%EB%A7%A4" title="리체열매">리체열매</a> </td>
+			<td> 자신에게 효과있는 벌레 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>33</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/32.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%A3%A8%EB%AF%B8%EC%97%B4%EB%A7%A4" title="루미열매">루미열매</a> </td>
+			<td> 자신에게 효과있는 바위 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>34</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/33.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%88%98%EB%B6%88%EC%97%B4%EB%A7%A4" title="수불열매">수불열매</a> </td>
+			<td> 자신에게 효과있는 고스트 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>35</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/34.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%ED%95%98%EB%B0%98%EC%97%B4%EB%A7%A4" title="하반열매">하반열매</a> </td>
+			<td> 자신에게 효과있는 드래곤 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>36</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/35.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%A7%88%EC%BD%94%EC%97%B4%EB%A7%A4" title="마코열매">마코열매</a> </td>
+			<td> 자신에게 효과있는 악 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>37</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/36.png" width="24" height="24"/></td>
+			<td><a href="http://ko.pokemon.wikia.com/wiki/%EB%A1%9C%EC%85%80%EC%97%B4%EB%A7%A4" title="로셀열매">로셀열매</a> </td>
+			<td> 자신에게 효과있는 페어리 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>38</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/37.png" width="24" height="24"/></td>
+			<td><a href="http://ko.pokemon.wikia.com/wiki/%EC%95%85%ED%82%A4%EC%97%B4%EB%A7%A4" title="악키열매">악키열매</a> </td>
+			<td> 물리공격을 맞으면 물리방어가 상승한다 </td>
+		</tr>
+		<tr>
+			<td>39</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/38.png" width="24" height="24"/></td>
+			<td><a href="http://ko.pokemon.wikia.com/wiki/%ED%83%80%EB%9D%BC%ED%94%84%EC%97%B4%EB%A7%A4" title="타라프열매">타라프열매</a> </td>
+			<td> 특수공격을 맞으면 특수방어가 상승한다 </td>
+		</tr>
+		<tr>
+			<td>40</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/39.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%B0%94%EB%A6%AC%EB%B9%84%EC%97%B4%EB%A7%A4" title="바리비열매">바리비열매</a> </td>
+			<td> 자신에게 효과있는 강철 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>41</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/40.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%B9%B4%EB%A6%AC%EC%97%B4%EB%A7%A4" title="카리열매">카리열매</a> </td>
+			<td> 노말 타입 기술의 위력을 반감시킨다 </td>
+		</tr>
+		<tr>
+			<td>42</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/41.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%B9%98%EB%A6%AC%EC%97%B4%EB%A7%A4" title="치리열매">치리열매</a> </td>
+			<td> 체력이 1/4 이하가 될 때 공격이 1랭크 증가한다 </td>
+		</tr>
+		<tr>
+			<td>43</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/42.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%9A%A9%EC%95%84%EC%97%B4%EB%A7%A4" title="용아열매">용아열매</a> </td>
+			<td> 체력이 1/4 이하가 될 때 방어가 1랭크 증가한다 </td>
+		</tr>
+		<tr>
+			<td>44</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/43.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%BA%84%EB%9D%BC%EC%97%B4%EB%A7%A4" title="캄라열매">캄라열매</a> </td>
+			<td> 체력이 1/4 이하가 될 때 스피드가 1랭크 증가한다 </td>
+		</tr>
+		<tr>
+			<td>45</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/44.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%95%BC%ED%83%80%EB%B9%84%EC%97%B4%EB%A7%A4" title="야타비열매">야타비열매</a> </td>
+			<td> 체력이 1/4 이하가 될 때 특수공격이 1랭크 증가한다 </td>
+		</tr>
+		<tr>
+			<td>46</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/45.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EA%B7%9C%EC%82%B4%EC%97%B4%EB%A7%A4" title="규살열매">규살열매</a> </td>
+			<td> 체력이 1/4 이하가 될 때 특수방어가 1랭크 증가한다 </td>
+		</tr>
+		<tr>
+			<td>47</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/46.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%9E%91%EC%82%AC%EC%97%B4%EB%A7%A4" title="랑사열매">랑사열매</a> </td>
+			<td> 체력이 1/4 이하가 될 때&nbsp;급소율이 1랭크 증가한다 </td>
+		</tr>
+		<tr>
+			<td>48</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/47.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%8A%A4%ED%83%80%EC%97%B4%EB%A7%A4" title="스타열매">스타열매</a> </td>
+			<td> 체력이 1/4 이하가 될 때 6가지 스탯 중 하나가 2랭크 증가한다 </td>
+		</tr>
+		<tr>
+			<td>49</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/48.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%9D%98%EB%AC%B8%EC%97%B4%EB%A7%A4" title="의문열매">의문열매</a> </td>
+			<td> 효과가 대단한 공격을 받았을 때 체력을 회복한다. </td>
+		</tr>
+		<tr>
+			<td>50</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/49.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EB%AF%B8%ED%81%B4%EC%97%B4%EB%A7%A4" title="미클열매">미클열매</a> </td>
+			<td> 체력이 1/4 이하일 경우 다음턴에 쓰는 기술의 명중률이 증가한다 </td>
+		</tr>
+		<tr>
+			<td>51</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/50.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%95%A0%EC%8A%88%EC%97%B4%EB%A7%A4" title="애슈열매">애슈열매</a> </td>
+			<td> 체력이 1/4 이하일 경우 다음턴에 선공하게 된다 </td>
+		</tr>
+		<tr>
+			<td>52</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/51.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%9E%90%EB%B3%B4%EC%97%B4%EB%A7%A4" title="자보열매">자보열매</a> </td>
+			<td> 물리공격을 받았을 경우 상대도 약간의 데미지를 받는다 </td>
+		</tr>
+		<tr>
+			<td>53</td>
+			<td><img src="https://raw.githubusercontent.com/chinoCorea/Database/master/images/52.png" width="24" height="24"/></td>
+			<td> <a href="http://ko.pokemon.wikia.com/wiki/%EC%95%A0%ED%84%B0%EC%97%B4%EB%A7%A4" title="애터열매">애터열매</a> </td>
+			<td> 특수공격을 받았을 경우 상대도 약간의 데미지를 받는다 </td>
+		</tr>
+	</table>
+
+</article>
