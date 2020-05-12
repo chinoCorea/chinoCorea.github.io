@@ -139,7 +139,7 @@
 			  $("#at_search").bind("input", function() {
 								   var value = $(this).val();
 								   
-								   $.getJSON("https://raw.githubusercontent.com/guitarraman/Database/master/ethnic.json", function(data) {
+								   $.getJSON("./ethnic.json", function(data) {
 											 $("#at_list_filter").html("");
 											 $.each(data, function(i, item) {
 													if (value != "" && item.name.contain(value)) {
