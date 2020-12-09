@@ -1,189 +1,133 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1"/>
         <meta charset="utf-8"/>
-        <title>Pokemon Calculator</title>
-        <script src="https://cdn.staticfile.org/vue/2.2.2/vue.min.js"></script>
-        <link rel="stylesheet" href="style.css"/>
+        <meta name="viewport" content="width=device-width,initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+        <title>포켓몬 계산기</title>
+        <script src="https://unpkg.com/vue@2.6.12/dist/vue.min.js"></script>
         <style>
-            .markdown-body { box-sizing: border-box; min-width: 200px; max-width: 980px; margin: 0 auto; padding: 30px; }
-        
-            .markdown-body table td { text-align: center; }
-        
-            .markdown-body .value-field { font-size: 15px; text-align: center; border: none; width: 50px; background-color: transparent; }
+            .app table td {
+                text-align: center;
+            }
         </style>
     </head>
-    <body class="markdown-body">
-        <div id="app">
-            <blockquote>
-                <p>포켓몬：<input type="text" v-model="search"/></p>
-                <ul>
-                    <li v-for="elem in lists" v-if="match(elem.name)">
-                        <a href="#1" @click="embed(elem)">{{ elem.name }}</a>
-                    </li>
-                </ul>
-            </blockquote>
-
-            <table>
+    <body>
+        <div class="app">
+            <h2>계산기</h2>
+            <input type="text" placeholder="포켓몬 입력" v-model="search" style="font-size: 15px;"/>
+            <img :src="image"/>
+            <ul>
+                <li v-for="elem in lists" v-if="search != '' && elem.name.indexOf(search) >= 0">
+                    <a href="#1" @click="search = elem.name + '\r';ethnic = elem.ethnic;image = elem.image">
+                        {{ elem.name }}
+                    </a>
+                </li>
+            </ul>
+            <table border="0" width="100%">
                 <tr>
-                    <td>분류</td>
-                    <td>종족값</td>
-                    <td>개체값</td>
-                    <td>노력치</td>
-                    <td>성격</td>
-                    <td>능력치</td>
+                    <th v-for="i in 6" width="16.6%">
+                        {{ ['분류', '종족값', '개체값', '노력치', '성격', '능력치'][i-1] }}
+                    </th>
                 </tr>
-                <tr>
-                    <td>HP</td>
-                    <td>{{ ethnic[0] }}</td>
-                    <td><input v-model.number="iv_h" class="value-field" /></td>
-                    <td><input v-model.number="ev_h" class="value-field" /></td>
-                    <td>+ －</td>
-                    <td>{{ hValue }}</td>
-                </tr>
-                <tr>
-                    <td>공격:</td>
-                    <td>{{ ethnic[1] }}</td>
-                    <td><input v-model.number="iv_a" class="value-field" /></td>
-                    <td><input v-model.number="ev_a" class="value-field" /></td>
-                    <td>
-                        <input type="radio" v-model.number="up" value="1" />
-                        <input type="radio" v-model.number="down" value="1" />
+                <tr v-for="n in [0, 1, 2, 3, 4, 5]">
+                    <th>{{ ['HP', '공격', '방어', '특공', '특방', '스피드'][n] + ':' }}</th>
+                    <td>{{ ethnic[n] }}</td>
+                    <td><input type="number" v-model.number="ivs[n]" v-bind:style="{ color: ivs[n] > 31 || ivs[n] < 0 ? 'red' : 'black', width: '30px' }"/></td>
+                    <td><input type="number" v-model.number="evs[n]" v-bind:style="{ color: evs[n] > 252 || evs[n] < 0 ? 'red' : 'black', width: '30px' }"/></td>
+                    <td v-if="n == 0">
+                        <b>＋ －</b>
                     </td>
-                    <td>{{ parseInt((ethnic[1] + iv_a / 2 + ev_a / 8 + 5) * nature(1) / 2) }}</td>
-                </tr>
-                <tr>
-                    <td>방어:</td>
-                    <td>{{ ethnic[2] }}</td>
-                    <td><input v-model.number="iv_b" class="value-field" /></td>
-                    <td><input v-model.number="ev_b" class="value-field" /></td>
-                    <td>
-                        <input type="radio" v-model.number="up" value="2" />
-                        <input type="radio" v-model.number="down" value="2" />
+                    <td v-else>
+                        <input type="radio" v-model.number="up" :value="n" />
+                        <input type="radio" v-model.number="down" :value="n" />
                     </td>
-                    <td>{{ bValue }}</td>
+                    <td>{{ values[n] }}</td>
                 </tr>
                 <tr>
-                    <td>특공:</td>
-                    <td>{{ ethnic[3] }}</td>
-                    <td><input v-model.number="iv_c" class="value-field" /></td>
-                    <td><input v-model.number="ev_c" class="value-field" /></td>
+                    <th>총합:</th>
+                    <td>{{ eval(ethnic.join('+')) }}</td>
+                    <td v-bind:style="{ color: ivSum > 186 || ivSum < 0 ? 'red' : 'black' }">{{ ivSum }}</td>
+                    <td v-bind:style="{ color: evSum > 510 || evSum < 0 ? 'red' : 'black' }">{{ evSum }}</td>
                     <td>
-                        <input type="radio" v-model.number="up" value="3" />
-                        <input type="radio" v-model.number="down" value="3" />
-                    </td>
-                    <td>{{ parseInt((ethnic[3] + iv_c / 2 + ev_c / 8 + 5) * nature(3) / 2) }}</td>
-                </tr>
-                <tr>
-                    <td>특방:</td>
-                    <td>{{ ethnic[4] }}</td>
-                    <td><input v-model.number="iv_d" class="value-field" /></td>
-                    <td><input v-model.number="ev_d" class="value-field" /></td>
-                    <td>
-                        <input type="radio" v-model.number="up" value="4" />
-                        <input type="radio" v-model.number="down" value="4" />
-                    </td>
-                    <td>{{ dValue }}</td>
-                </tr>
-                <tr>
-                    <td>스피드:</td>
-                    <td>{{ ethnic[5] }}</td>
-                    <td><input v-model.number="iv_s" class="value-field" /></td>
-                    <td><input v-model.number="ev_s" class="value-field" /></td>
-                    <td>
-                        <input type="radio" v-model.number="up" value="5" />
-                        <input type="radio" v-model.number="down" value="5" />
-                    </td>
-                    <td>{{ parseInt((ethnic[5] + iv_s / 2 + ev_s / 8 + 5) * nature(5) / 2) }}</td>
-                </tr>
-                <tr>
-                    <td>총합:</td>
-                    <td>{{ ethnic[0] + ethnic[1] + ethnic[2] + ethnic[3] + ethnic[4] + ethnic[5] }}</td>
-                    <td>{{ iv_h + iv_a + iv_b + iv_c + iv_d + iv_s }}</td>
-                    <td>{{ ev_h + ev_a + ev_b + ev_c + ev_d + ev_s }}</td>
-                    <td>
-                        <select v-model.number="selection" @click="setNature()">
-                            <option v-for="nature in natures" :value="nature.id">{{ nature.name }}</option>
+                        <select v-model.number="selection">
+                            <option value="11">수줍음</option>
+                            <option value="22">노력</option>
+                            <option value="33">온순</option>
+                            <option value="44">변덕</option>
+                            <option value="55">성실</option>
+                            <option value="12">외로움</option>
+                            <option value="13">고집</option>
+                            <option value="14">개구쟁이</option>
+                            <option value="15">용감</option>
+                            <option value="21">대담</option>
+                            <option value="23">장난꾸러기</option>
+                            <option value="24">촐랑</option>
+                            <option value="25">무사태평</option>
+                            <option value="31">조심</option>
+                            <option value="32">의젓</option>
+                            <option value="34">덜렁</option>
+                            <option value="35">냉정</option>
+                            <option value="41">차분</option>
+                            <option value="42">얌전</option>
+                            <option value="43">신중</option>
+                            <option value="45">건방</option>
+                            <option value="51">겁쟁이</option>
+                            <option value="52">성급</option>
+                            <option value="53">명랑</option>
+                            <option value="54">천진난만</option>
                         </select>
                     </td>
                     <td>Lv. 50</td>
                 </tr>
-                <tr>
-                    <th>물리방어 :</th>
-                    <td colspan="2">{{ parseInt(hValue * bValue / 0.411) }}</td>
-                    <th>특수방어 :</th>
-                    <td colspan="2">{{ parseInt(hValue * dValue / 0.411) }}</td>
-                </tr>
             </table>
-            
         </div>
-        
+
         <script>
             new Vue({
-                el: '#app',
+                el: '.app',
                 data: {
                     ethnic: [100, 100, 100, 100, 100, 100],
-                    iv_h: 31, iv_a: 31, iv_b: 31, iv_c: 31, iv_d: 31, iv_s: 31,
-                    ev_h: 0, ev_a: 0, ev_b: 0, ev_c: 0, ev_d: 0, ev_s: 0,
-                    up: 1,
-                    down: 1,
+                    ivs: [31, 31, 31, 31, 31, 31],
+                    evs: [0, 0, 0, 0, 0, 0],
+                    up: 1, down: 1,
                     search: "",
-                    lists: [],
-                    selection: 11,
-                    natures: [
-                        { id: 11, name: "성실" }, { id: 21, name: "대담" }, { id: 32, name: "의젓" },
-                        { id: 43, name: "신중" }, { id: 54, name: "천진난만" }, { id: 22, name: "온순" },
-                        { id: 31, name: "조심" }, { id: 33, name: "수줍음" }, { id: 44, name: "변덕" },
-                        { id: 25, name: "무사태평" }, { id: 13, name: "고집" }, { id: 41, name: "차분" },
-                        { id: 34, name: "덜렁" }, { id: 24, name: "촐랑" }, { id: 14, name: "개구쟁이" },
-                        { id: 53, name: "명랑" }, { id: 45, name: "건방" }, { id: 51, name: "겁쟁이" },
-                        { id: 55, name: "노력" }, { id: 15, name: "용감" }, { id: 42, name: "얌전" },
-                        { id: 52, name: "성급" }, { id: 35, name: "냉정" }, { id: 23, name: "장난꾸러기" }
-                    ]
+                    image: "",
+                    lists: []
                 },
 
                 computed: {
-                    hValue: function() {
-                        return parseInt(this.ethnic[0] + this.iv_h / 2 + this.ev_h / 8 + 60);
+                    values: function() {
+                        var temp = []
+
+                        for (var i = 0; i < 6; i ++) {
+                            var character = (this.up == i ? 1.2 : 1) + (this.down == i ? 0.8 : 1);
+
+                            if (i == 0) {
+                                temp.push(parseInt(this.ethnic[0] + this.ivs[0] / 2 + this.evs[0] / 8 + 60));
+                            } else {
+                                temp.push(parseInt((this.ethnic[i] + this.ivs[i] / 2 + this.evs[i] / 8 + 5) * character / 2));
+                            }
+                        }
+
+                        return temp;
                     },
 
-                    bValue: function() {
-                        return parseInt((this.ethnic[2] + this.iv_b / 2 + this.ev_b / 8 + 5) * this.nature(2) / 2);
+                    ivSum: function() {
+                        return eval(this.ivs.join('+'));
                     },
 
-                    dValue: function() {
-                        return parseInt((this.ethnic[4] + this.iv_d / 2 + this.ev_d / 8 + 5) * this.nature(4) / 2);
-                    }
-                },
-
-                methods: {
-                    match: function(name) {
-                        return this.search != "" && name.indexOf(this.search) >= 0;
+                    evSum: function() {
+                        return eval(this.evs.join('+'));
                     },
 
-                    embed: function(elem) {
-                        this.search = elem.name + "\r";
-                        this.ethnic = elem.ethnic;
-                    },
-
-                    nature: function(num) {
-                        return (this.up == num ? 1.2 : 1) + (this.down == num ? 0.8 : 1);
-                    },
-
-                    setNature: function() {
-                        this.up = parseInt(this.selection / 10);
-                        this.down = this.selection % 10;
-                    }
-                },
-
-                watch: {
-                    up(value) {
-                        this.selection = parseInt(value) * 10 + this.down;
-                    },
-
-                    down(value) {
-                        this.selection = this.up * 10 + parseInt(value);
+                    selection: {
+                        get: function() {
+                            return this.up * 10 + this.down;
+                        },
+                        set: function(newValue) {
+                            this.up = parseInt(newValue / 10);
+                            this.down = newValue % 10;
+                        }
                     }
                 },
 
@@ -194,8 +138,7 @@
                         this.lists = json
                     })
                 }
-            });
+            })
         </script>
-
     </body>
 </html>
