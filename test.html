@@ -18,7 +18,7 @@
             <img :src="image"/>
             <ul>
                 <li v-for="elem in lists" v-if="search != '' && elem.name.indexOf(search) >= 0">
-                    <a href="#1" @click="search = elem.name + '\r';ethnic = elem.ethnic;image = elem.image">
+                    <a href="#1" @click="search = elem.name + '\r';ethnic = elem.ethnic;image = elem.icon">
                         {{ elem.name }}
                     </a>
                 </li>
