@@ -5,29 +5,27 @@
         <title>Blob Test</title>
     </head>
     <body>
-        <video id="my-video" src="./test.mp4" controls></video>
+        <video id="my-video" controls></video>
         <script>
-            // var xhr = new XMLHttpRequest();
+            var xhr = new XMLHttpRequest();
 
-            // xhr.responseType = 'blob';
+            xhr.responseType = 'blob';
 
-            // xhr.open("GET", "./test.mp4");
-            // xhr.timeout = '6000';
-            // xhr.onload = function() {
-            //     if (xhr.status !== 200 ) {
-            //         alert('loading error');
-            //         return;
-            //     }
+            xhr.open("GET", "./test.mp4");
+            xhr.timeout = '6000';
+            xhr.onload = function() {
+                if (xhr.status !== 200 ) {
+                    alert('loading error');
+                    return;
+                }
   
-            //     video = document.getElementById("my-video");
-            //     video.src = window.URL.createObjectURL(xhr.response);
-            //     video.onload = function() {
-            //         window.URL.revokeObjectURL(video.src);
-            //     }
-
-
-            // };
-            // xhr.send();
+                video = document.getElementById("my-video");
+                video.src = window.URL.createObjectURL(xhr.response);
+                video.onload = function() {
+                    window.URL.revokeObjectURL(video.src);
+                };
+            };
+            xhr.send();
         </script>
     </body>
 </html>
